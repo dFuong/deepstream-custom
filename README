@@ -1,33 +1,21 @@
-################################################################################
-# Copyright (c) 2019-2021, NVIDIA CORPORATION. All rights reserved.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-################################################################################
+# Customize Deepstream_v5.1
 
-Prerequisites:
+**Prerequisites:**
 - DeepStreamSDK 5.1
 - Python 3.6
 - Gst-python
 
-#Deepstream msgbroker supports sending messages to Azure(mqtt) IOThub, kafka and AMQP broker(rabbitmq)
+**Run with docker:**
+- Docker pull for kernel architecture x86/amd64: `docker pull fsharp58/deepstream_custom:5.1_v1`
+- Docker pull for kernel architecture x86/arm64 (jetson): `docker pull fsharp58/deepstream_custom:5.1_jetson`
+- Mount git-repo in docker follow: `-v <path to this directory> :/opt/nvidia/deepstream/deepstream/sources/python`
 
-Dependencies
+**Run with your host:**
+- Follow README in branch: 2.0.1
+
+**Deepstream msgbroker supports sending messages to Azure(mqtt) IOThub, kafka and AMQP broker(rabbitmq)**
+
+**Dependencies**
 ------------
  $ sudo apt-get update
 
@@ -45,6 +33,9 @@ Dependencies
     $ sudo apt-get install libjansson4  libjansson-dev
     $ sudo apt-get install librdkafka1=0.11.3-1build1
 
+- Set up Kafka following docker:[Kafka-docker](https://forums.developer.nvidia.com/t/using-kafka-protocol-for-retrieving-data-from-a-deepstream-pipeline/67626/14)
+- Set up Kafka following Kafka-enviroment:[Kafka-enviroment](https://kafka.apache.org/quickstart)
+
  AMQP (rabbitmq):
  ----------------
     Install rabbitmq-c library
@@ -58,25 +49,25 @@ Dependencies
     $ sudo ldconfig
 
 SETUP:
-  1.Use --proto-lib or -p command line option to set the path of adaptor library.
+  1.Use --proto-lib line option to set the path of adaptor library.
     Adaptor library can be found at /opt/nvidia/deepstream/deepstream-<version>/lib
 
     kafka lib           - libnvds_kafka_proto.so
     azure device client - libnvds_azure_proto.so
     AMQP lib            - libnvds_amqp_proto.so
 
-  2.Use --conn-str command line option as required to set connection to backend server.
+  2.Use --conn-str line option as required to set connection to backend server.
     For Azure           - Full Azure connection string
     For Kafka           - Connection string of format:  host;port;topic
     For Amqp            - Connection string of format:  host;port;username. Password to be provided in cfg_amqp.txt
 
     Provide connection string under quotes. e.g. --conn-str="host;port;topic"
 
-  3.Use --topic or -t command line option to provide message topic (optional).
+  3.Use --topic line option to provide message topic (optional).
     Kafka message adaptor also has the topic param embedded within the connection string format
     In that case, "topic" from command line should match the topic within connection string
 
-  4.Use --schema or -s command line option to select the message schema (optional).
+  4.Use --schema line option to select the message schema (optional).
     Json payload to send to cloud can be generated using different message schemas.
     schema = 0; Full message schema with separate payload per object (Default)
     schema = 1; Minimal message with multiple objects in single payload.
@@ -84,7 +75,7 @@ SETUP:
 
   5.Use --no-display to disable display.
 
-  6.Use --cfg-file or -c command line option to set adaptor configuration file.
+  6.Use --cfg-file line option to set adaptor configuration file.
     This is optional if connection string has all relevent information.
 
     For kafka: use cfg_kafka.txt as a reference.
@@ -135,22 +126,24 @@ SETUP:
   NOTE:
     - DO NOT delete the line [message-broker] in cfg file. Its the section identifier used for parsing
     - For Azure & AMQP:
-        If you use --conn-str commandline option as in step 2), make sure to provide password details in cfg file
+        If you use --conn-str option as in step 2), make sure to provide password details in cfg file
         OR
-        You can ignore --conn-str commandline option and provide full connection details within cfg file
+        You can ignore --conn-str option and provide full connection details within cfg file
 
   7. Enable logging:
-       Go through the README to setup & enable logs for the messaging libraries(kafka, azure, amqp)
-         $ cat ../../../tools/nvds_logger/README
+    Go through the README to setup & enable logs for the messaging libraries(kafka, azure, amqp)
+        
+    $cat ../../../tools/nvds_logger/README
 
-To run:
-  $ python3 deepstream_test_4.py -i <H264 filename> -p <Proto adaptor library> --conn-str=<Connection string> -s <0/1>
+**Sample run:**
+```
+python3 deepstream_test_4.py file:<path to video(H-265)> 
+python3 deepstream_test_4.py rtsp:// 
+```
 
-NOTE: More details about the message adapters can be found at README inside DS_PACKAGE_DIR/sources/libs/*_protocol_adaptor
 
-This document shall describe about the sample deepstream-test4 application.
+**NOTE:** More details about the message adapters can be found at README inside DS_PACKAGE_DIR/sources/libs/*_protocol_adaptor
 
-This sample builds on top of the deepstream-test1 sample to demonstrate how to:
 
 * Use "nvmsgconv" and "nvmsgbroker" plugins in the pipeline.
 * Create NVDS_META_EVENT_MSG type of meta and attach to buffer.
@@ -179,7 +172,8 @@ Refer generate_event_msg_meta() to know how to use "extMsg" and "extMsgSize"
 fields for custom objects and how to provide copy/free function and attach that
 object to buffer as metadata.
 
-NOTE: This app by default sends message for first object of every 30th frame. To
+**NOTE:** This app by default sends message for first object of every 30th frame. To
 change the frequency of messages, modify the following line in source code accordingly.
-if(is_first_object and not (frame_number%30)) should be changed to:
-if (not (frame_number % 30))  #To get all objects of a single frame
+> if(is_first_object and not (frame_number%30)) should be changed to:
+> if (not (frame_number % 30))  #To get all objects of a single frame
+
