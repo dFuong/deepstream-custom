@@ -1,0 +1,23 @@
+[property]
+gpu-id=0
+net-scale-factor=0.0039215697906911373
+model-file=/opt/nvidia/deepstream/deepstream-5.1/sources/python/deepstream-test4/config_tlt/resnet34_peoplenet_pruned.etlt
+model-engine-file=/opt/nvidia/deepstream/deepstream-5.1/sources/python/deepstream-test4/config_tlt/peoplenet_34_int8.engine
+labelfile-path=/opt/nvidia/deepstream/deepstream-5.1/sources/python/deepstream-test4/config_tlt/labels.txt
+force-implicit-batch-dim=1
+batch-size=1
+process-mode=1
+model-color-format=0
+## 0=FP32, 1=INT8, 2=FP16 mode
+network-mode=1
+num-detected-classes=3
+interval=0
+gie-unique-id=1
+output-blob-names=output_cov/Sigmoid;output_bbox/BiasAdd
+
+[class-attrs-all]
+pre-cluster-threshold=0.2
+eps=0.2
+group-threshold=1
+
+
