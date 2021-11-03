@@ -90,8 +90,8 @@ Kafka:
 
 **To run:**
 ```
-python3 deepstream_test_3.py file:<path to video(H-265)> 
-python3 deepstream_test_3.py rtsp:// 
+python3 deepstream_test.py file:<path to video(H-265)> 
+python3 deepstream_test.py rtsp:// 
 ```
 
 
