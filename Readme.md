@@ -21,7 +21,7 @@
 
 **Run with docker:**
 - Docker pull for kernel architecture x86/amd64: `docker pull fsharp58/deepstream_custom:5.1_v1`
-- Docker pull for kernel architecture x86/arm64 (jetson): `docker pull fsharp58/deepstream_custom:5.1.v1_l4t`
+- Docker pull for kernel architecture x86/arm64 (jetson):`docker pull fsharp58/deepstream_custom:5.1.v1_l4t`
 - Mount git-repo in docker follow: `-v <path to this directory> :/opt/nvidia/deepstream/deepstream/sources/python`
 
 **Run with your host:**
@@ -84,9 +84,6 @@ Kafka:
     should be set based on the schema type selected using the --schema option. Set this to
     "sensor.id" in case of Full message schema, and to "sensorId" in case of Minimal message schema
     
-  7.Enable logging:
-       Go through the README to setup & enable logs for the messaging libraries kafka.
-        $ cat ../../../tools/nvds_logger/README
 
 **To run:**
 ```
